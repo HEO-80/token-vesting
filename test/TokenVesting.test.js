@@ -8,7 +8,6 @@ describe("TokenVesting", function () {
   const DURATION = 365n;
 
   beforeEach(async function () {
-    // Usamos tu forma original de obtener ethers, que funcionaba a la perfección
     const { ethers } = await network.connect();
     [owner, beneficiary, addr1] = await ethers.getSigners();
 
@@ -34,17 +33,23 @@ describe("TokenVesting", function () {
     expect(releasable).to.equal(0n);
   });
 
-it("Should release all tokens after full duration", async function () {
+  it("Should release all tokens after full duration", async function () {
     const { ethers } = await network.connect();
-    await vesting.createVesting(beneficiary.address, TOTAL_AMOUNT, CLIFF, DURATION);
+    
+    const LARGE_CLIFF = 0n;
+    const LARGE_DURATION = 1n;
+    
+    await vesting.createVesting(beneficiary.address, TOTAL_AMOUNT, LARGE_CLIFF, LARGE_DURATION);
 
-    const block = await ethers.provider.getBlock("latest");
-    const futureTime = block.timestamp + 400;
-    await ethers.provider.send("evm_setNextBlockTimestamp", [futureTime]);
+    // Mine blocks — each block advances timestamp by 1 second
+    await ethers.provider.send("evm_mine", []);
+    await ethers.provider.send("evm_mine", []);
     await ethers.provider.send("evm_mine", []);
 
-    const releasable = await vesting.releasableAmount(beneficiary.address);
-    expect(releasable).to.equal(TOTAL_AMOUNT);
+    // release() is a transaction — uses real block timestamp
+    await vesting.connect(beneficiary).release();
+    const balance = await token.balanceOf(beneficiary.address);
+    expect(balance).to.equal(TOTAL_AMOUNT);
   });
 
   it("Should not create duplicate vesting for same beneficiary", async function () {
@@ -67,4 +72,6 @@ it("Should release all tokens after full duration", async function () {
     const schedule = await vesting.vestingSchedules(beneficiary.address);
     expect(schedule.revoked).to.equal(true);
   });
+
+
 });

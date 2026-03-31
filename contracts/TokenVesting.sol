@@ -112,11 +112,33 @@ contract TokenVesting is Ownable {
 
     /// @dev Calculate total vested amount at current timestamp
     function _vestedAmount(VestingSchedule storage schedule) internal view returns (uint256) {
+        if (block.timestamp < schedule.startTime) return 0;
+        
         uint256 elapsed = block.timestamp - schedule.startTime;
 
         if (elapsed < schedule.cliffDuration) return 0;
         if (elapsed >= schedule.vestingDuration) return schedule.totalAmount;
 
         return (schedule.totalAmount * elapsed) / schedule.vestingDuration;
+    }
+
+       /// @notice Debug function - remove before production
+    function debugVesting(address beneficiary) external view returns (
+        uint256 startTime,
+        uint256 cliffDuration,
+        uint256 vestingDuration,
+        uint256 totalAmount,
+        uint256 blockTimestamp,
+        uint256 elapsed,
+        uint256 vestedAmount
+    ) {
+        VestingSchedule storage schedule = vestingSchedules[beneficiary];
+        startTime = schedule.startTime;
+        cliffDuration = schedule.cliffDuration;
+        vestingDuration = schedule.vestingDuration;
+        totalAmount = schedule.totalAmount;
+        blockTimestamp = block.timestamp;
+        elapsed = block.timestamp > schedule.startTime ? block.timestamp - schedule.startTime : 0;
+        vestedAmount = _vestedAmount(schedule);
     }
 }

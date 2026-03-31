@@ -6,11 +6,12 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface TokenVestingInterface extends Interface {
-    getFunction(nameOrSignature: "createVesting" | "owner" | "releasableAmount" | "release" | "renounceOwnership" | "revoke" | "token" | "transferOwnership" | "vestingSchedules"): FunctionFragment;
+    getFunction(nameOrSignature: "createVesting" | "debugVesting" | "owner" | "releasableAmount" | "release" | "renounceOwnership" | "revoke" | "token" | "transferOwnership" | "vestingSchedules"): FunctionFragment;
 
     getEvent(nameOrSignatureOrTopic: "OwnershipTransferred" | "TokensReleased" | "VestingCreated" | "VestingRevoked"): EventFragment;
 
     encodeFunctionData(functionFragment: 'createVesting', values: [AddressLike, BigNumberish, BigNumberish, BigNumberish]): string;
+encodeFunctionData(functionFragment: 'debugVesting', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
 encodeFunctionData(functionFragment: 'releasableAmount', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'release', values?: undefined): string;
@@ -21,6 +22,7 @@ encodeFunctionData(functionFragment: 'transferOwnership', values: [AddressLike])
 encodeFunctionData(functionFragment: 'vestingSchedules', values: [AddressLike]): string;
 
     decodeFunctionResult(functionFragment: 'createVesting', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'debugVesting', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'owner', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'releasableAmount', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'release', data: BytesLike): Result;
@@ -122,6 +124,14 @@ decodeFunctionResult(functionFragment: 'vestingSchedules', data: BytesLike): Res
     
 
     
+    debugVesting: TypedContractMethod<
+      [beneficiary: AddressLike, ],
+      [[bigint, bigint, bigint, bigint, bigint, bigint, bigint] & {startTime: bigint, cliffDuration: bigint, vestingDuration: bigint, totalAmount: bigint, blockTimestamp: bigint, elapsed: bigint, vestedAmount: bigint }],
+      'view'
+    >
+    
+
+    
     owner: TypedContractMethod<
       [],
       [string],
@@ -192,6 +202,11 @@ decodeFunctionResult(functionFragment: 'vestingSchedules', data: BytesLike): Res
       [beneficiary: AddressLike, amount: BigNumberish, cliffDuration: BigNumberish, vestingDuration: BigNumberish, ],
       [void],
       'nonpayable'
+    >;
+getFunction(nameOrSignature: 'debugVesting'): TypedContractMethod<
+      [beneficiary: AddressLike, ],
+      [[bigint, bigint, bigint, bigint, bigint, bigint, bigint] & {startTime: bigint, cliffDuration: bigint, vestingDuration: bigint, totalAmount: bigint, blockTimestamp: bigint, elapsed: bigint, vestedAmount: bigint }],
+      'view'
     >;
 getFunction(nameOrSignature: 'owner'): TypedContractMethod<
       [],
