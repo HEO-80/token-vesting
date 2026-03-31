@@ -4,27 +4,20 @@ import { network } from "hardhat";
 describe("TokenVesting", function () {
   let vesting, token, owner, beneficiary, addr1;
   const TOTAL_AMOUNT = 1000n * 10n ** 18n;
-  const CLIFF = 60n;        // 60 seconds
-  const DURATION = 365n;    // 365 seconds (simulating days)
+  const CLIFF = 60n;
+  const DURATION = 365n;
 
   beforeEach(async function () {
+    // Usamos tu forma original de obtener ethers, que funcionaba a la perfección
     const { ethers } = await network.connect();
     [owner, beneficiary, addr1] = await ethers.getSigners();
 
-    // Deploy a simple ERC-20 token to use in vesting
-    const Token = await ethers.getContractFactory("TaxToken");
-    token = await Token.deploy(
-      "Test Token", "TST",
-      10000n * 10n ** 18n,
-      0,
-      owner.address
-    );
+    const Token = await ethers.getContractFactory("MockERC20");
+    token = await Token.deploy("Test Token", "TST", 10000n * 10n ** 18n);
 
-    // Deploy vesting contract
     const Vesting = await ethers.getContractFactory("TokenVesting");
     vesting = await Vesting.deploy(await token.getAddress());
 
-    // Approve vesting contract to spend tokens
     await token.approve(await vesting.getAddress(), TOTAL_AMOUNT);
   });
 
@@ -41,12 +34,13 @@ describe("TokenVesting", function () {
     expect(releasable).to.equal(0n);
   });
 
-  it("Should release all tokens after full duration", async function () {
+it("Should release all tokens after full duration", async function () {
     const { ethers } = await network.connect();
     await vesting.createVesting(beneficiary.address, TOTAL_AMOUNT, CLIFF, DURATION);
 
-    // Fast forward time past vesting duration
-    await ethers.provider.send("evm_increaseTime", [400]);
+    const block = await ethers.provider.getBlock("latest");
+    const futureTime = block.timestamp + 400;
+    await ethers.provider.send("evm_setNextBlockTimestamp", [futureTime]);
     await ethers.provider.send("evm_mine", []);
 
     const releasable = await vesting.releasableAmount(beneficiary.address);

@@ -10,13 +10,17 @@ import * as Contracts from "./index.js";
 
 declare module "@nomicfoundation/hardhat-ethers/types" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
-  getContractFactory(name: 'TokenVesting', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.TokenVesting__factory>
+  getContractFactory(name: 'MockERC20', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MockERC20__factory>
+getContractFactory(name: 'TokenVesting', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.TokenVesting__factory>
 
-  getContractAt(name: 'TokenVesting', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.TokenVesting>
+  getContractAt(name: 'MockERC20', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MockERC20>
+getContractAt(name: 'TokenVesting', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.TokenVesting>
 
-  deployContract(name: 'TokenVesting', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenVesting>
+  deployContract(name: 'MockERC20', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MockERC20>
+deployContract(name: 'TokenVesting', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenVesting>
 
-  deployContract(name: 'TokenVesting', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenVesting>
+  deployContract(name: 'MockERC20', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MockERC20>
+deployContract(name: 'TokenVesting', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenVesting>
 
     // default types
     getContractFactory(
