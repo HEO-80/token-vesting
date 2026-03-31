@@ -73,5 +73,8 @@ describe("TokenVesting", function () {
     expect(schedule.revoked).to.equal(true);
   });
 
+// La clave fue usar release() como transacción real en vez de releasableAmount 
+// como view call — en Hardhat 3 con EDR las transacciones sí usan el timestamp
+//  del bloque minado, las view calls no
 
 });
